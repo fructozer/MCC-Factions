@@ -56,22 +56,6 @@ public class DeclareIndependenceCommand extends SubCommand {
         liege.removeVassal(this.faction.getName());
         this.faction.setLiege("none");
 
-        if (!configService.getBoolean("allowNeutrality") || (!((boolean) faction.getFlags().getFlag("neutral")) && !((boolean) liege.getFlags().getFlag("neutral")))) {
-            // make enemies if (1) neutrality is disabled or (2) declaring faction is not neutral and liege is not neutral
-            FactionWarStartEvent warStartEvent = new FactionWarStartEvent(this.faction, liege, player);
-            Bukkit.getPluginManager().callEvent(warStartEvent);
-
-            if (!warStartEvent.isCancelled()) {
-                this.faction.addEnemy(liege.getName());
-                liege.addEnemy(this.faction.getName());
-
-                // break alliance if allied
-                if (this.faction.isAlly(liege.getName())) {
-                    this.faction.removeAlly(liege.getName());
-                    liege.removeAlly(faction.getName());
-                }
-            }
-        }
         messageServer(translate("&c" + getText("HasDeclaredIndependence", faction.getName(), liege.getName())));
     }
 

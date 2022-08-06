@@ -72,21 +72,13 @@ public class Nation extends Group implements Diplomatic, Lawful {
     }
 
     @Override
-    public void addEnemy(String factionName) {
-        if (!containsIgnoreCase(enemyFactions, factionName)) {
-            enemyFactions.add(factionName);
-        }
-    }
+    public void addEnemy(String factionName) {}
 
     @Override
-    public void removeEnemy(String factionName) {
-        removeIfContainsIgnoreCase(enemyFactions, factionName);
-    }
+    public void removeEnemy(String factionName) {}
 
     @Override
-    public boolean isEnemy(String factionName) {
-        return containsIgnoreCase(enemyFactions, factionName);
-    }
+    public boolean isEnemy(String factionName) {return false;}
 
     @Override
     public ArrayList<String> getEnemyFactions() {
@@ -94,16 +86,7 @@ public class Nation extends Group implements Diplomatic, Lawful {
     }
 
     @Override
-    public String getEnemiesSeparatedByCommas() {
-        String enemies = "";
-        for (int i = 0; i < enemyFactions.size(); i++) {
-            enemies = enemies + enemyFactions.get(i);
-            if (i != enemyFactions.size() - 1) {
-                enemies = enemies + ", ";
-            }
-        }
-        return enemies;
-    }
+    public String getEnemiesSeparatedByCommas() {return "";}
 
     @Override
     public void requestTruce(String factionName) {

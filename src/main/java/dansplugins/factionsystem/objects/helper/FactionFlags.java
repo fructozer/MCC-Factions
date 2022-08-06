@@ -54,7 +54,6 @@ public class FactionFlags {
         flagNames.add("mustBeOfficerToInviteOthers");
         flagNames.add("alliesCanInteractWithLand");
         flagNames.add("vassalageTreeCanInteractWithLand");
-        flagNames.add("neutral");
         flagNames.add("dynmapTerritoryColor");
         flagNames.add("territoryAlertColor");
         flagNames.add("prefixColor");
@@ -70,7 +69,6 @@ public class FactionFlags {
         booleanValues.put("mustBeOfficerToInviteOthers", true);
         booleanValues.put("alliesCanInteractWithLand", configService.getBoolean("allowAllyInteraction"));
         booleanValues.put("vassalageTreeCanInteractWithLand", configService.getBoolean("allowVassalageTreeInteraction"));
-        booleanValues.put("neutral", false);
         stringValues.put("dynmapTerritoryColor", "#ff0000");
         stringValues.put("territoryAlertColor", configService.getString("territoryAlertColor"));
         stringValues.put("prefixColor", "white");
@@ -93,9 +91,6 @@ public class FactionFlags {
         }
         if (!booleanValues.containsKey("vassalageTreeCanInteractWithLand")) {
             booleanValues.put("vassalageTreeCanInteractWithLand", configService.getBoolean("allowVassalageTreeInteraction"));
-        }
-        if (!booleanValues.containsKey("neutral")) {
-            booleanValues.put("neutral", false);
         }
         if (!stringValues.containsKey("dynmapTerritoryColor")) {
             stringValues.put("dynmapTerritoryColor", "#ff0000");
@@ -125,10 +120,6 @@ public class FactionFlags {
     }
 
     public void setFlag(String flag, String value, Player player) {
-        if (flag.equals("neutral") && !configService.getBoolean("allowNeutrality")) {
-            player.sendMessage(ChatColor.RED + "" + localeService.get("NeutralityDisabled"));
-            return;
-        }
 
         if (!configService.getBoolean("factionsCanSetPrefixColors")) {
             player.sendMessage("Players can't set prefix colors.");
@@ -272,10 +263,6 @@ public class FactionFlags {
     private String getFlagsSeparatedByCommas() {
         StringBuilder toReturn = new StringBuilder();
         for (String flagName : flagNames) {
-
-            if (flagName.equals("neutral") && !configService.getBoolean("allowNeutrality")) {
-                continue;
-            }
 
             if (flagName.equals("prefixColor") && (!configService.getBoolean("playersChatWithPrefixes") || !configService.getBoolean("factionsCanSetPrefixColors"))) {
                 continue;

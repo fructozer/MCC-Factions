@@ -130,9 +130,6 @@ public class ConfigService {
         if (!getConfig().isBoolean("randomFactionAssignment")) {
             getConfig().addDefault("randomFactionAssignment", false);
         }
-        if (!getConfig().isBoolean("allowNeutrality")) {
-            getConfig().addDefault("allowNeutrality", false);
-        }
         if (!getConfig().isBoolean("showPrefixesInFactionChat")) {
             getConfig().addDefault("showPrefixesInFactionChat", false);
         }
@@ -223,7 +220,6 @@ public class ConfigService {
                     || option.equalsIgnoreCase("territoryAlertPopUp")
                     || option.equalsIgnoreCase("territoryIndicatorActionbar")
                     || option.equalsIgnoreCase("randomFactionAssignment")
-                    || option.equalsIgnoreCase("allowNeutrality")
                     || option.equalsIgnoreCase("showPrefixesInFactionChat")
                     || option.equalsIgnoreCase("debugMode")
                     || option.equalsIgnoreCase("factionProtectionsEnabled")
@@ -293,7 +289,6 @@ public class ConfigService {
         getConfig().addDefault("territoryAlertColor", "white");
         getConfig().addDefault("territoryIndicatorActionbar", true);
         getConfig().addDefault("randomFactionAssignment", false);
-        getConfig().addDefault("allowNeutrality", false);
         getConfig().addDefault("showPrefixesInFactionChat", false);
         getConfig().addDefault("debugMode", false);
         getConfig().addDefault("factionProtectionsEnabled", true);
@@ -349,7 +344,6 @@ public class ConfigService {
                 + ", territoryAlertColor: " + getString("territoryAlertColor")
                 + ", territoryIndicatorActionbar: " + getBoolean("territoryIndicatorActionbar")
                 + ", randomFactionAssignment: " + getBoolean("randomFactionAssignment")
-                + ", allowNeutrality: " + getBoolean("allowNeutrality")
                 + ", showPrefixesInFactionChat: " + getBoolean("showPrefixesInFactionChat")
                 + ", factionProtectionsEnabled: " + getBoolean("factionProtectionsEnabled")
                 + ", limitLand: " + getBoolean("limitLand")
