@@ -6,11 +6,14 @@ package dansplugins.factionsystem.eventhandlers;
 
 import dansplugins.factionsystem.MedievalFactions;
 import dansplugins.factionsystem.data.PersistentData;
+import dansplugins.factionsystem.events.TerritoryEnterEvent;
+import dansplugins.factionsystem.events.TerritoryLeaveEvent;
 import dansplugins.factionsystem.integrators.DynmapIntegrator;
 import dansplugins.factionsystem.objects.domain.ClaimedChunk;
 import dansplugins.factionsystem.objects.domain.Faction;
 import dansplugins.factionsystem.services.LocaleService;
 import dansplugins.factionsystem.utils.TerritoryOwnerNotifier;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -49,14 +52,25 @@ public class MoveHandler implements Listener {
 
             if (newChunkIsClaimedAndOldChunkWasNot(event)) {
                 String factionName = persistentData.getChunkDataAccessor().getClaimedChunk(Objects.requireNonNull(event.getTo()).getChunk()).getHolder();
+                TerritoryEnterEvent ev = new TerritoryEnterEvent(event.getPlayer(),event.getTo().getChunk());
+                Bukkit.getPluginManager().callEvent(ev);
                 Faction holder = persistentData.getFaction(factionName);
                 territoryOwnerNotifier.sendPlayerTerritoryAlert(player, holder);
                 return;
             }
 
             if (newChunkIsUnclaimedAndOldChunkWasNot(event)) {
+                TerritoryLeaveEvent ev = new TerritoryLeaveEvent(event.getPlayer(),event.getFrom().getChunk());
+                Bukkit.getPluginManager().callEvent(ev);
                 territoryOwnerNotifier.sendPlayerTerritoryAlert(player, null);
                 return;
+            }
+
+            if (newChunkIsClaimedAndOldChunkWasAlsoClaimed(event)){
+                TerritoryEnterEvent ev1 = new TerritoryEnterEvent(event.getPlayer(), Objects.requireNonNull(event.getTo()).getChunk());
+                Bukkit.getPluginManager().callEvent(ev1);
+                TerritoryLeaveEvent ev2 = new TerritoryLeaveEvent(event.getPlayer(),event.getFrom().getChunk());
+                Bukkit.getPluginManager().callEvent(ev2);
             }
 
             if (newChunkIsClaimedAndOldChunkWasAlsoClaimed(event) && chunkHoldersAreNotEqual(event)) {

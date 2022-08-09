@@ -17,6 +17,7 @@ import dansplugins.factionsystem.objects.domain.PowerRecord;
 import dansplugins.factionsystem.services.ConfigService;
 import dansplugins.factionsystem.services.LocaleService;
 import dansplugins.factionsystem.utils.Logger;
+import dansplugins.factionsystem.worldwar.WorldWarTrigger;
 import dansplugins.fiefs.utils.UUIDChecker;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -37,7 +38,7 @@ public class ForceCommand extends SubCommand {
     private final CurrenciesIntegrator currenciesIntegrator;
 
     private final String[] commands = new String[]{
-            "Save", "Load", "Peace", "Demote", "Join", "Kick", "Power", "Renounce", "Transfer", "RemoveVassal", "Rename", "BonusPower", "Unlock", "Create", "Claim", "Flag"
+            "Save", "Load", "Demote", "Join", "Kick", "Power", "Renounce", "Transfer", "RemoveVassal", "Rename", "BonusPower", "Unlock", "Create", "Claim", "Flag", "StartWar", "StopWar"
     };
     private final HashMap<List<String>, String> subMap = new HashMap<>();
 
@@ -631,4 +632,13 @@ public class ForceCommand extends SubCommand {
 
         faction.getFlags().setFlag(option, value, player);
     }
-}
+
+    @SuppressWarnings("unused")
+    private void forceStartWar(CommandSender sender, String[] args) {
+        WorldWarTrigger.inst(medievalFactions,persistentData).onEnable();
+    }
+    @SuppressWarnings("unused")
+    private void forceStopWar(CommandSender sender, String[] args) {
+        WorldWarTrigger.inst(medievalFactions,persistentData).onDisable();
+    }
+    }

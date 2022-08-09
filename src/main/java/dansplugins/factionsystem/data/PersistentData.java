@@ -21,6 +21,7 @@ import dansplugins.factionsystem.utils.InteractionAccessChecker;
 import dansplugins.factionsystem.utils.Logger;
 import dansplugins.factionsystem.utils.extended.BlockChecker;
 import dansplugins.factionsystem.utils.extended.Messenger;
+import dansplugins.factionsystem.worldwar.WorldWarTrigger;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -1318,6 +1319,7 @@ public class PersistentData {
             savePlayerActivityRecords();
             saveLockedBlocks();
             saveWars();
+            WorldWarTrigger.inst(medievalFactions,persistentData).onDisable();
             if (configService.hasBeenAltered()) {
                 medievalFactions.saveConfig();
             }

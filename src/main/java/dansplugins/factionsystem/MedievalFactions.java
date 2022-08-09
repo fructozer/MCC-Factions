@@ -21,6 +21,7 @@ import dansplugins.factionsystem.utils.TerritoryOwnerNotifier;
 import dansplugins.factionsystem.utils.extended.BlockChecker;
 import dansplugins.factionsystem.utils.extended.Messenger;
 import dansplugins.factionsystem.utils.extended.Scheduler;
+import dansplugins.factionsystem.worldwar.WorldWarTrigger;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -199,7 +200,8 @@ public class MedievalFactions extends PonderBukkitPlugin {
                 new JoinHandler(persistentData, configService.getLocaleService(), configService, logger, messenger, territoryOwnerNotifier),
                 new MoveHandler(persistentData, territoryOwnerNotifier, configService.getLocaleService(), this, persistentData.getDynmapIntegrator()),
                 new QuitHandler(ephemeralData, persistentData, actionBarService),
-                new SpawnHandler(configService, persistentData)
+                new SpawnHandler(configService, persistentData),
+                WorldWarTrigger.inst(this, persistentData)
         ));
     }
 
