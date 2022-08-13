@@ -3,17 +3,17 @@ package dansplugins.factionsystem.worldwar;
 
 import dansplugins.factionsystem.MedievalFactions;
 import dansplugins.factionsystem.data.PersistentData;
-import dansplugins.factionsystem.externalapi.MF_Faction;
 import dansplugins.factionsystem.objects.domain.ClaimedChunk;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
 
 public class DisputedTerritory {
     private MTCConfig config;

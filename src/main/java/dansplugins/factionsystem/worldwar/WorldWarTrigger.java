@@ -56,6 +56,8 @@ public class WorldWarTrigger implements Listener {
     }
     private boolean isWar = false;
 
+    //TODO: add notice for warningBeforeWarStart/warningBeforeWarStop
+
     private void timerStart(){
         LocalDateTime now = LocalDateTime.now();
         int toSunday = warDay.getValue()-now.getDayOfWeek().getValue();
@@ -134,6 +136,8 @@ public class WorldWarTrigger implements Listener {
         Bukkit.getOnlinePlayers().parallelStream().forEach(p -> config.s(p,config.lang.warStopMessage));
     }
 
+    //TODO: add on join/quit
+
     @EventHandler
     public void onTeleport(PlayerTeleportEvent e){
         PlayerMoveEvent me = new PlayerMoveEvent(e.getPlayer(),e.getFrom(),e.getTo());
@@ -171,6 +175,8 @@ public class WorldWarTrigger implements Listener {
             disputing.get(e.getChunk()).leave(e.getPlayer());
     }
 
+    //TODO: add a condition requiring the chunk to be at the limit of faction
+    //FIXME: raid not start at first time enter chunk
     public void startDisputedAt(Chunk chunk){
         if (persistentData.getChunkDataAccessor().getClaimedChunk(chunk)!=null)
         disputing.put(chunk,new DisputedTerritory(medievalFactions, persistentData,config,chunk));
