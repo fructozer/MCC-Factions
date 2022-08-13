@@ -5,11 +5,8 @@ import dansplugins.factionsystem.data.PersistentData;
 import dansplugins.factionsystem.eventhandlers.MoveHandler;
 import dansplugins.factionsystem.events.TerritoryEnterEvent;
 import dansplugins.factionsystem.events.TerritoryLeaveEvent;
-import dansplugins.factionsystem.externalapi.MF_Faction;
-import dansplugins.factionsystem.objects.domain.ClaimedChunk;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
@@ -18,7 +15,6 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.plugin.RegisteredListener;
 
-import java.io.File;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -34,6 +30,8 @@ public class WorldWarTrigger implements Listener {
     private int warStopMinute;
     private DayOfWeek warDay;
 
+    private final MTCConfig config;
+
     private Timer currentTimer = null;
 
     public static WorldWarTrigger inst(MedievalFactions medievalFactions, PersistentData accessor)
@@ -42,20 +40,19 @@ public class WorldWarTrigger implements Listener {
         new WorldUtility(plugin,accessor);
         this.medievalFactions = plugin;
         this.persistentData = accessor;
+        config = new MTCConfig(plugin);
         loadConfig();
         if (checkTime()) onEnable(); else timerStart();
         instance = this;
     }
     private void loadConfig(){
-        File cf = new File(medievalFactions.getDataFolder(),"minetrungco.yml");
-        if (!cf.exists()) medievalFactions.saveResource("minetrungco.yml",false);
-        YamlConfiguration ycf = YamlConfiguration.loadConfiguration(cf);
-        warStartHour   = Integer.parseInt(Objects.requireNonNull(ycf.getString("war_start", "19:00")).split(":")[0]);
-        warStartMinute = Integer.parseInt(Objects.requireNonNull(ycf.getString("war_start", "19:00")).split(":")[1]);
-        warStopHour    = Integer.parseInt(Objects.requireNonNull(ycf.getString("war_stop" , "23:00")).split(":")[0]);
-        warStopMinute  = Integer.parseInt(Objects.requireNonNull(ycf.getString("war_stop" , "23:00")).split(":")[1]);
-        warDay         = DayOfWeek.valueOf(Objects.requireNonNull(ycf.getString("war_day", "sunday")).toUpperCase());
-
+        warStartHour   = Integer.parseInt(config.war_start.split(":")[0]);
+        if (config.war_start .split(":").length<2) warStartMinute = 0; else
+        warStartMinute = Integer.parseInt(config.war_start.split(":")[1]);
+        warStopHour    = Integer.parseInt(config.war_stop .split(":")[0]);
+        if (config.war_stop .split(":").length<2) warStopMinute = 0; else
+        warStopMinute  = Integer.parseInt(config.war_stop .split(":")[1]);
+        warDay         = DayOfWeek.valueOf(config.war_day.toUpperCase());
     }
     private boolean isWar = false;
 
@@ -121,10 +118,12 @@ public class WorldWarTrigger implements Listener {
 
     public void onEnable(){
         if (isWar) return;
+        config.reload();
+        loadConfig();
         isWar = true;
         startAllDisputed();
         timerStop();
-        Bukkit.getOnlinePlayers().parallelStream().forEach(p -> p.sendMessage("§aWorld War has been started"));
+        Bukkit.getOnlinePlayers().parallelStream().forEach(p -> config.s(p,config.lang.warStartMessage));
     }
 
     public void onDisable(){
@@ -132,7 +131,7 @@ public class WorldWarTrigger implements Listener {
         isWar = false;
         StopAllDisputed();
         timerStart();
-        Bukkit.getOnlinePlayers().parallelStream().forEach(p -> p.sendMessage("§aWorld War has been stoped"));
+        Bukkit.getOnlinePlayers().parallelStream().forEach(p -> config.s(p,config.lang.warStopMessage));
     }
 
     @EventHandler
@@ -173,7 +172,8 @@ public class WorldWarTrigger implements Listener {
     }
 
     public void startDisputedAt(Chunk chunk){
-        disputing.put(chunk,new DisputedTerritory(medievalFactions, persistentData,chunk));
+        if (persistentData.getChunkDataAccessor().getClaimedChunk(chunk)!=null)
+        disputing.put(chunk,new DisputedTerritory(medievalFactions, persistentData,config,chunk));
     }
 
     public void startAllDisputed(){

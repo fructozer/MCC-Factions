@@ -1,3 +1,28 @@
-war_start: 19:00
-war_stop: 23:00 #max 23:59 not 00:00
+war_start: '19:00'
+war_stop: '23:00' #max 23:59 not 00:00
 war_day: sunday
+
+chunk_durability: 100
+
+lang:
+  warningBeforeWarStart:
+    - '&6There were only 5 minutes left before the war began!'
+    - '&6Prepare your forces as best you can whether you are hunters or prey.'
+  warningBeforeWarStop:
+    - '&6There were only 5 minutes left before the end of the war!'
+    - '&6Even so, don`t let your guard down from potential dangers.'
+  warStartMessage:
+    - '&cThe world war was started by the world itself!'
+    - '&cThe darkness is now enveloping every factions.'
+  warStopMessage:
+    - '&aThe world war was temporarily ended for now!'
+    - '&aThe light once again illuminates the world.'
+
+  raidWarning: '&8&l[&c&lWARNING&8&l]&c {enemy} is trying to raid your faction at {location}.'
+
+  transferNotice: '&aOwnership of the chunk at {location} has been transferred to faction {holder}'
+
+  raidTitle: 'Chunk holder: {holder} | Bias: {now}/{max}'
+
+
+

@@ -7,6 +7,7 @@ import dansplugins.factionsystem.externalapi.MF_Faction;
 import dansplugins.factionsystem.objects.domain.ClaimedChunk;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
@@ -15,21 +16,26 @@ import org.bukkit.entity.Player;
 import java.util.*;
 
 public class DisputedTerritory {
+    private MTCConfig config;
     private final Chunk chunk;
     private static final WorldUtility util = WorldUtility.inst;
     private final MedievalFactions medievalFactions;
     private final PersistentData persistentData;
     private final BossBar bossBar;
     private final HashMap<String, HashSet<Player>> member = new HashMap<>();
-    private final int maxHealth = 100;
-    private int currentHealth = 100;
+    private final int maxHealth;
+    private int currentHealth;
     private final int id;
     private String holder;
 
-    public DisputedTerritory(MedievalFactions medievalFactions, PersistentData accessor, Chunk chunk) {
+    public DisputedTerritory(MedievalFactions medievalFactions, PersistentData accessor,MTCConfig config, Chunk chunk) {
         this.medievalFactions = medievalFactions;
         this.persistentData = accessor;
+        this.config = config;
         this.chunk = chunk;
+        this.maxHealth = config.chunk_durability;
+        this.currentHealth = config.chunk_durability;
+        updateHolder();
         bossBar = createBossBar();
         bossBar.setVisible(true);
         Bukkit.getOnlinePlayers().parallelStream().filter(p -> p.getLocation().getChunk()==chunk).forEach(this::join);
@@ -41,7 +47,10 @@ public class DisputedTerritory {
     }
 
     private BossBar createBossBar(){
-        String title = String.format("Chủ sở hữu: %s | Ưu thế: %d/%d",holder,currentHealth,maxHealth);
+        String title = config.c(config.lang.raidTitle
+            .replace("{holder}",holder)
+            .replace("{now}",String.valueOf(currentHealth))
+            .replace("{max}",String.valueOf(maxHealth)));
         double progress = (double) currentHealth/maxHealth;
         BarColor color;
         if      (progress>0.6) color = BarColor.GREEN;
@@ -59,6 +68,7 @@ public class DisputedTerritory {
     }
 
     public void join(Player player){
+        if(medievalFactions.getAPI().getFaction(player)==null) return;
         String fac = medievalFactions.getAPI().getFaction(player).getName();
         if (!member.containsKey(fac))
         member.put(fac,new HashSet<>());
@@ -66,6 +76,7 @@ public class DisputedTerritory {
         bossBar.addPlayer(player);
     }
     public void leave(Player player){
+        if(medievalFactions.getAPI().getFaction(player)==null) return;
         bossBar.removePlayer(player);
         String fac = medievalFactions.getAPI().getFaction(player).getName();
         if (!member.containsKey(fac)) return;
@@ -78,8 +89,8 @@ public class DisputedTerritory {
                 p -> currentHealth = Math.max(0, Math.min(maxHealth, currentHealth + (util.isSafe(p,chunk) ? 1 : -1)))
         ));
         if (currentHealth==0) changeHolder();
-        updateBar();
         updateHolder();
+        updateBar();
     }
 
     public void stop(){
@@ -98,7 +109,12 @@ public class DisputedTerritory {
                     thisChunk.setHolder(newHolder);
                     persistentData.getFaction(holder).getClaimedChunks().remove(thisChunk);
                     persistentData.getFaction(newHolder).getClaimedChunks().add(thisChunk);
-                    member.values().forEach(m -> m.forEach(pl -> pl.sendMessage("(NO_TRANSLATE) chunk holder change to "+ entry.getKey())));
+                    String loc = (thisChunk.getChunk().getX()*16)+":"+(thisChunk.getChunk().getZ()*16);
+                    member.keySet().forEach(f -> persistentData.getFaction(f).getMemberList().forEach(pl -> config.lang.transferNotice.forEach(s -> {
+                        Player player = Bukkit.getPlayer(pl);
+                        if (player!=null && player.isOnline())
+                        player.sendMessage(config.c(s.replace("{location}",loc).replace("{holder}",newHolder)));
+                    })));
                 }
         );
 
